@@ -1,10 +1,13 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets, status
 
-from myapi.models import CarouselImage, MangaChapters, MangaList
-from myapi.serializers import CarouselImageSerializer, MangaChapterSerializer, MangaListSerializer
+from myapi.models import (
+    CarouselImage, MangaChapters, MangaList)
+from myapi.serializers import (
+    CarouselImageSerializer,
+    MangaChapterSerializer,
+    MangaListSerializer)
 from zipfile import ZipFile
 from PIL import Image
 import io
@@ -54,6 +57,7 @@ def manga_chapters_images(request):
                 img_byte_arr = io.BytesIO()
                 img.save(img_byte_arr, format='PNG')
                 img_byte_arr = img_byte_arr.getvalue()
-                images.append(base64.encodebytes(img_byte_arr).decode('ascii'))
+                images.append(
+                    base64.encodebytes(img_byte_arr).decode('ascii'))
 
     return Response({'images': images})

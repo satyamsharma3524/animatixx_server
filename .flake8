@@ -1,0 +1,8 @@
+[flake8]
+ignore = E999, W503, W504, C901
+exclude = 
+    .git,
+    __pycache__,
+    migrations,
+    animatrixx_server/settings.py
+    ./manage.py

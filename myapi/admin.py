@@ -6,13 +6,24 @@ from myapi.models import CarouselImage, MangaChapters, MangaList
 
 
 class CarouselImageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'image', 'created_at', 'updated_at')
+    list_display = (
+        'name', 'image', 'created_at', 'updated_at'
+    )
+
 
 class MangaListAdmin(admin.ModelAdmin):
-    list_display = ('name', 'image', 'description', 'created_at', 'updated_at')
+    list_display = (
+        'name', 'image', 'description', 'created_at',
+        'updated_at'
+    )
+
 
 class MangaChaptersAdmin(admin.ModelAdmin):
-    list_display = ('manga', 'name', 'image', 'manga_file', 'description', 'created_at', 'updated_at')
+    list_display = (
+        'manga', 'name', 'image', 'manga_file',
+        'description', 'created_at', 'updated_at'
+    )
+
 
 admin.site.register(CarouselImage, CarouselImageAdmin)
 admin.site.register(MangaList, MangaListAdmin)
