@@ -1,6 +1,9 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets, status
+from rest_framework.pagination import PageNumberPagination
+import multiprocessing
+from functools import partial
 
 from myapi.models import (
     CarouselImage, MangaChapters, MangaList)
@@ -38,6 +41,20 @@ def manga_chapter_list(request):
     return Response({'chapters': data})
 
 
+class CustomPagination(PageNumberPagination):
+    page_size = 5
+
+
+def process_image(file_path, image_name):
+    with ZipFile(file_path, 'r') as zip_ref:
+        with zip_ref.open(image_name) as file:
+            img = Image.open(file)
+            img_byte_arr = io.BytesIO()
+            img.save(img_byte_arr, format='WEBP', quality=50)
+            img_byte_arr = img_byte_arr.getvalue()
+            return base64.encodebytes(img_byte_arr).decode('ascii')
+
+
 @api_view(['GET'])
 def manga_chapters_images(request):
     chapter_pk = request.GET.get('pk')
@@ -45,19 +62,18 @@ def manga_chapters_images(request):
         chapter = MangaChapters.objects.get(pk=chapter_pk)
     except MangaChapters.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
     file_path = chapter.manga_file.path
 
+    image_names = []
     with ZipFile(file_path, 'r') as zip_ref:
         image_names = zip_ref.namelist()
-        images = []
-        for image_name in image_names:
-            with zip_ref.open(image_name) as file:
-                img = Image.open(file)
-                img_byte_arr = io.BytesIO()
-                img.save(img_byte_arr, format='PNG')
-                img_byte_arr = img_byte_arr.getvalue()
-                images.append(
-                    base64.encodebytes(img_byte_arr).decode('ascii'))
 
-    return Response({'images': images})
+    with multiprocessing.Pool() as pool:
+        func = partial(process_image, file_path)
+        images = pool.map(func, image_names)
+
+    paginator = CustomPagination()
+    paginated_images = paginator.paginate_queryset(images, request)
+    serialized_images = paginated_images
+
+    return paginator.get_paginated_response(serialized_images)
