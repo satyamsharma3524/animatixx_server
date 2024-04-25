@@ -50,7 +50,7 @@ def process_image(file_path, image_name):
         with zip_ref.open(image_name) as file:
             img = Image.open(file)
             img_byte_arr = io.BytesIO()
-            img.save(img_byte_arr, format='WEBP', quality=50)
+            img.save(img_byte_arr, format='WEBP', quality=10)
             img_byte_arr = img_byte_arr.getvalue()
             return base64.encodebytes(img_byte_arr).decode('ascii')
 
@@ -61,7 +61,10 @@ def manga_chapters_images(request):
     try:
         chapter = MangaChapters.objects.get(pk=chapter_pk)
     except MangaChapters.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {"message": "Chapter not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
     file_path = chapter.manga_file.path
 
     image_names = []
