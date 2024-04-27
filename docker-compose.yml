@@ -1,10 +1,45 @@
 version: '3.9'
 
 services:
+  animatrixx-db:
+    image: mariadb
+    container_name: animatrixx-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: animatrixx
+      MYSQL_DB_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+    ports:
+      - 3306:3306
+    volumes:
+      - animatrixx_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysql", "-h", "localhost", "-u", "root", "-psecret", "-e", "SELECT 1"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    networks:
+      - animatrixx
+
   animatrixx-backend:
-    image: animatrixx-django-backend
+    image: animatrixx_server
     build:
       context: .
       dockerfile: Dockerfile
+    depends_on:
+      - animatrixx-db
     ports:
-      - '8000:8000'
+      - 8000:8000
+    networks:
+      - animatrixx
+
+
+volumes:
+  animatrixx_data:
+
+networks:
+  animatrixx:
+    driver: bridge

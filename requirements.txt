@@ -9,3 +9,4 @@ pycodestyle==2.11.1
 pyflakes==3.2.0
 sqlparse==0.4.4
 typing_extensions==4.10.0
+mysqlclient==2.2.4
