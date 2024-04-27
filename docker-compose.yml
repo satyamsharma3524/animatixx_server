@@ -16,7 +16,7 @@ services:
     volumes:
       - animatrixx_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysql", "-h", "localhost", "-u", "root", "-psecret", "-e", "SELECT 1"]
+      test: ["CMD", "mysql", "-h", "animatrixx-db", "-u", "root", "-p secret", "-e", "SELECT 1"]
       interval: 1m30s
       timeout: 30s
       retries: 5
