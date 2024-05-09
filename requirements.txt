@@ -10,3 +10,5 @@ pyflakes==3.2.0
 sqlparse==0.4.4
 typing_extensions==4.10.0
 mysqlclient==2.2.4
+django-redis==5.4.0
+redis==5.0.4

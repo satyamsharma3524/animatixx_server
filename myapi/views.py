@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets, status
 from rest_framework.pagination import PageNumberPagination
+from django.core.cache import cache
 import multiprocessing
 from functools import partial
 
@@ -36,8 +37,13 @@ class MangaViewSet(mixins.ListModelMixin,
 @api_view(['GET'])
 def manga_chapter_list(request):
     manga_pk = request.GET.get('pk')
-    chapters = MangaChapters.objects.filter(manga__pk=manga_pk)
-    data = MangaChapterSerializer(chapters, many=True).data
+    cache_key = f'manga_chapters_{manga_pk}'
+    data = cache.get(cache_key)
+
+    if data is None:
+        chapters = MangaChapters.objects.filter(manga__pk=manga_pk)
+        data = MangaChapterSerializer(chapters, many=True).data
+        cache.set(cache_key, data)
     return Response({'chapters': data})
 
 
@@ -79,4 +85,12 @@ def manga_chapters_images(request):
     paginated_images = paginator.paginate_queryset(images, request)
     serialized_images = paginated_images
 
+    # Check if the paginated response is already cached
+    cache_key = f"manga_chapters_images_{chapter_pk}_{paginator.page.number}"
+    cached_response = cache.get(cache_key)
+    if cached_response is not None:
+        return paginator.get_paginated_response(cached_response)
+
+    # Cache the paginated response
+    cache.set(cache_key, serialized_images, timeout=None)
     return paginator.get_paginated_response(serialized_images)

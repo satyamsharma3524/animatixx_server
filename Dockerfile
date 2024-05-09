@@ -6,7 +6,7 @@ WORKDIR /code
 
 COPY . /code/
 
-RUN apt-get update && apt-get install -y default-mysql-client \
+RUN apt-get update && apt-get install -y default-mysql-client redis\
     && pip install --no-cache-dir --default-timeout=300 --upgrade pip \
     && pip install --no-cache-dir --default-timeout=300 -r requirements.txt \
     && apt-get clean

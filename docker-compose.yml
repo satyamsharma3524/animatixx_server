@@ -26,19 +26,34 @@ services:
 
   animatrixx-backend:
     image: animatrixx_server
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
       - animatrixx-db
+      - redis
+    volumes:
+      - .:/code
     ports:
       - 8000:8000
+    networks:
+      - animatrixx
+
+  redis:
+    restart: always
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - redisdata:/data
     networks:
       - animatrixx
 
 
 volumes:
   animatrixx_data:
+  redisdata:
 
 networks:
   animatrixx:
