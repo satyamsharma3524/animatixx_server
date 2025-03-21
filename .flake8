@@ -6,3 +6,4 @@ exclude =
     migrations,
     animatrixx_server/settings.py
     ./manage.py
+    tests.py
