@@ -38,7 +38,8 @@ class Manga(models.Model):
 class Chapter(models.Model):
     manga = models.ForeignKey(
         Manga, related_name="chapters", on_delete=models.CASCADE)
-    chapter_number = models.CharField(max_length=255)
+    chapter_number = models.CharField(max_length=255, null=True, blank=True)
+    chapter_dex_id = models.CharField(max_length=255, null=True, blank=True)
     title = models.CharField(max_length=500, null=True, blank=True)
     release_date = models.DateTimeField(null=True, blank=True)
     images = models.JSONField(default=list, blank=True, null=True)

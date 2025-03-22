@@ -12,7 +12,13 @@ class TagAdmin(admin.ModelAdmin):
     )
 
 
+class ChapterInline(admin.TabularInline):
+    model = Chapter
+    extra = 1
+
+
 class MangaAdmin(admin.ModelAdmin):
+    inlines = [ChapterInline]
     list_display = (
         'title', 'dex_id', 'anilist_id', 'completion_status',
         'cover_image', 'banner_image', 'created_at', 'updated_at'
