@@ -90,6 +90,9 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'secret',
         'HOST': 'animatrixx-db',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 

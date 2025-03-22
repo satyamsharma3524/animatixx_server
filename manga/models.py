@@ -24,7 +24,7 @@ class Manga(models.Model):
     original_language = models.CharField(max_length=255, null=True, blank=True)
     last_chapter = models.CharField(max_length=255, null=True, blank=True)
     completion_status = models.BooleanField(default=False)
-    tags = models.ManyToManyField(Tag, blank=True, null=True)
+    tags = models.ManyToManyField(Tag, related_name="mangas")
     latest_chapter = models.CharField(max_length=255, null=True, blank=True)
     cover_image = models.CharField(max_length=500, null=True, blank=True)
     banner_image = models.CharField(max_length=500, null=True, blank=True)
@@ -32,7 +32,7 @@ class Manga(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return self.title[:50] + "..." if len(self.title) > 50 else self.title
 
 
 class Chapter(models.Model):
@@ -50,7 +50,8 @@ class Chapter(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["chapter_number"]  # Ensures proper sorting
+        ordering = ["chapter_number"]
 
     def __str__(self):
-        return f"{self.manga.title} - Chapter {self.chapter_number}"
+        return self.manga.title[:50] + "..." if len(
+            self.manga.title) > 50 else self.manga.title

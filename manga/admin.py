@@ -27,7 +27,7 @@ class MangaAdmin(admin.ModelAdmin):
 
 class ChapterAdmin(admin.ModelAdmin):
     list_display = (
-        'manga', 'chapter_number', 'title', 'release_date',
+        'manga', 'chapter_number', 'chapter_dex_id', 'title', 'release_date',
         'created_at', 'updated_at'
     )
 

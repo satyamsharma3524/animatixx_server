@@ -3,7 +3,9 @@ import time
 import re
 import random
 
-from manga.models import Chapter, Manga
+from manga.models import (
+    Chapter, Manga, Tag
+)
 
 
 def fetch_manga_data(offset):
@@ -32,12 +34,32 @@ def fetch_manga_data(offset):
                     'attributes']['lastChapter'],
                 'completion_status': manga_data[
                     'attributes']['status'] == 'completed',
-                # 'tags': manga_data['attributes']['tags'],
                 'latest_chapter': manga_data[
                     'attributes']['latestUploadedChapter'],
             }
             manga, created = Manga.objects.update_or_create(
                 dex_id=manga_data['id'], defaults=payload)
+
+            # Process and associate tags
+            tag_list = manga_data.get('attributes', {}).get('tags', [])
+            tag_objects = []
+
+            for tag_data in tag_list:
+                tag_title = tag_data["attributes"]["name"].get(
+                    "en", "Unknown Tag")
+                tag_description = tag_data["attributes"].get(
+                    "description", {}).get("en", "")
+
+                tag, _ = Tag.objects.get_or_create(
+                    title=tag_title,
+                    defaults={"description": tag_description}
+                )
+                tag_objects.append(tag)
+
+            # Associate tags with the manga
+            manga.tags.set(tag_objects)
+            manga.save()
+
             if created:
                 time.sleep(2)
                 print(f"Created manga and called for image: {manga}")
