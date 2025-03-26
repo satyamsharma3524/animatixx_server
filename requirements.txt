@@ -14,3 +14,11 @@ django-redis==5.4.0
 redis==5.0.4
 requests
 django-extensions
+django-select2
+django-import-export
+celery
+django-celery-results
+django-celery-beat
+django-prometheus
+python-logging-loki
+python-dotenv

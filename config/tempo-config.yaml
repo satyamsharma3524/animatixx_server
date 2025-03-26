@@ -1,0 +1,13 @@
+server:
+  http_listen_port: 3200
+ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+storage:
+  trace:
+    backend: local
+    local:
+      path: /tmp/tempo/traces

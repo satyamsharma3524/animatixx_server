@@ -1,22 +1,16 @@
-version: '3.9'
-
 services:
   animatrixx-db:
     image: mariadb
     container_name: animatrixx-db
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: animatrixx
-      MYSQL_DB_PORT: 3306
-      MYSQL_USER: root
-      MYSQL_PASSWORD: secret
+    env_file:
+      - .env
     ports:
       - 3306:3306
     volumes:
       - animatrixx_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysql", "-h", "animatrixx-db", "-u", "root", "-p secret", "-e", "SELECT 1"]
+      test: ["CMD", "mysql", "-h", "animatrixx-db", "-u", "root", "-psecret", "-e", "SELECT 1"]
       interval: 1m30s
       timeout: 30s
       retries: 5
@@ -24,7 +18,7 @@ services:
     networks:
       - animatrixx
 
-  animatrixx-backend:
+  animatrixx-backend: &animatrixx_server
     image: animatrixx_server
     restart: always
     build:
@@ -35,6 +29,7 @@ services:
       - redis
     volumes:
       - .:/code
+    command: sh -c "sleep 5 && python manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000
     networks:
@@ -50,10 +45,95 @@ services:
     networks:
       - animatrixx
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - animatrixx
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - animatrixx
+
+  loki:
+    image: grafana/loki
+    container_name: loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./config/loki-config.yaml:/etc/loki/local-config.yaml:ro
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - animatrixx
+  
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - ./config/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - /var/log/django:/var/log/django
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    networks:
+      - animatrixx
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - animatrixx
+
+  celery:
+    <<: *animatrixx_server
+    container_name: celery_worker
+    command: celery -A animatrixx_server worker --loglevel=info
+    volumes:
+      - .:/code
+    depends_on:
+      - rabbitmq
+    ports: []
+    networks:
+      - animatrixx
+  
+  celery-beat:
+    <<: *animatrixx_server
+    container_name: celery_beat
+    command: celery -A animatrixx_server beat --loglevel=info
+    volumes:
+      - .:/code
+    depends_on:
+      - rabbitmq
+    ports: []
+    networks:
+      - animatrixx
 
 volumes:
   animatrixx_data:
   redisdata:
+  rabbitmq_data:
 
 networks:
   animatrixx:
