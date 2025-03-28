@@ -2,3 +2,11 @@ db.sqlite3
 __pycache__/
 *.py[cod]
 /static/
+
+/staticfiles/
+# Python
+app/__pycache__/
+app/*/__pycache__/
+app/*/*/__pycache__/
+app/*/*/*/__pycache__/
+.env/
