@@ -22,3 +22,4 @@ django-celery-beat
 django-prometheus
 python-logging-loki
 python-dotenv
+uWSGI
