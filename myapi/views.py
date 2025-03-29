@@ -5,9 +5,13 @@ from rest_framework import mixins, viewsets
 # from django.core.cache import cache
 
 from manga.models import (
-    Manga)
+    Chapter,
+    Manga
+)
 from manga.serializers import (
-    MangaSerializer)
+    ChapterSerializer,
+    MangaSerializer
+)
 
 
 class MangaViewSet(mixins.ListModelMixin,
@@ -16,4 +20,16 @@ class MangaViewSet(mixins.ListModelMixin,
     queryset = Manga.objects.all().order_by("-created_at")
 
     def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+
+class ChapterViewSet(mixins.ListModelMixin,
+                     viewsets.GenericViewSet):
+    serializer_class = ChapterSerializer
+    queryset = Chapter.objects.all().order_by("-chapter_number")
+
+    def list(self, request, *args, **kwargs):
+        manga_id = kwargs.get("manga_id")
+        print(f"manga_id: {manga_id}")
+        self.queryset = self.queryset.filter(manga__pk=manga_id)
         return super().list(request, *args, **kwargs)
