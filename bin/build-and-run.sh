@@ -5,5 +5,5 @@ PROJECT_DIR=$DIR/..
 
 cd $PROJECT_DIR
 
-docker-compose -f docker-compose-prod.yml build --pull
-docker-compose -f docker-compose-prod.yml up -d --remove-orphans
+docker-compose -f docker-compose.yml build --pull
+docker-compose -f docker-compose.yml up -d --remove-orphans

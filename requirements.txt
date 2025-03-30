@@ -23,3 +23,9 @@ django-prometheus
 python-logging-loki
 python-dotenv
 uWSGI
+djangorestframework-simplejwt
+django-cors-headers
+django-allauth
+dj-rest-auth
+cryptography
+django-ratelimit

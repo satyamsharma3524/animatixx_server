@@ -5,6 +5,9 @@ from rest_framework import mixins, viewsets
 # from django.core.cache import cache
 from django.db.models import IntegerField
 from django.db.models.functions import Cast
+# from rest_framework.permissions import IsAuthenticated
+# from rest_framework.authentication import TokenAuthentication
+
 
 from manga.models import (
     Chapter,
@@ -20,6 +23,8 @@ class MangaViewSet(mixins.ListModelMixin,
                    viewsets.GenericViewSet):
     serializer_class = MangaSerializer
     queryset = Manga.objects.all().order_by("-created_at")
+    # permission_classes = [IsAuthenticated]
+    # authentication_classes = [TokenAuthentication]
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
