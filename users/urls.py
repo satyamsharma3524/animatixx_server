@@ -1,13 +1,20 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.routers import DefaultRouter
+
 from .views import (
     GoogleLogin,
     GoogleOAuthCallbackView,
     RegisterView,
     LoginView,
+    UserHistoryViewSet,
     UserView,
     AddReadHistoryView
 )
+
+
+router = DefaultRouter()
+router.register(r'user-history', UserHistoryViewSet, basename="user-history")
 
 
 urlpatterns = [
@@ -19,4 +26,5 @@ urlpatterns = [
     path('google/', GoogleLogin.as_view(), name='google_login'),
     path('google/callback/',
          GoogleOAuthCallbackView.as_view(), name='google_callback'),
+    path('', include(router.urls)),
 ]

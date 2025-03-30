@@ -79,3 +79,26 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.user.username}: {self.content[:30]}..."
+
+
+class UserHistory(models.Model):
+    """Tracks the manga a user reads and their progress."""
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="manga_history")
+    manga = models.ForeignKey(
+        Manga, on_delete=models.CASCADE, related_name="user_history")
+    last_read_chapter = models.CharField(max_length=255, null=True, blank=True)
+    progress_percentage = models.FloatField(default=0)
+    is_completed = models.BooleanField(default=False)
+    last_interacted = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-last_interacted"]
+        unique_together = ("user", "manga")
+
+    def __str__(self):
+        return (f"{self.user.username} - {self.manga.title}"
+                f"- {self.progress_percentage}%")

@@ -1,10 +1,15 @@
+from manga.helpers import update_manga_history
+from manga.models import UserHistory
+from manga.serializers import UserHistorySerializer
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import User
 from .serializers import (
     RegisterSerializer, LoginSerializer, UserSerializer)
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 # from django_ratelimit.decorators import ratelimit
 
 
@@ -103,3 +108,23 @@ class AddReadHistoryView(APIView):
             {"message": "History updated"},
             status=status.HTTP_200_OK
         )
+
+
+class UserHistoryViewSet(viewsets.ModelViewSet):
+    """Handles retrieving and updating manga reading history."""
+
+    serializer_class = UserHistorySerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def get_queryset(self):
+        return UserHistory.objects.filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        """Update manga reading history when a user reads a chapter."""
+        user = request.user
+        manga_id = request.data.get("manga_id")
+        chapter = request.data.get("chapter")
+
+        history = update_manga_history(user, manga_id, chapter)
+        return Response(UserHistorySerializer(history).data)
