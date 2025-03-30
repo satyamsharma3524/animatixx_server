@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from manga.models import Chapter, Manga, Tag
+from manga.models import Chapter, Comment, Manga, Tag
 
 # Register your models here.
 
@@ -32,6 +32,13 @@ class ChapterAdmin(admin.ModelAdmin):
     )
 
 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'user', 'content', 'created_at', 'updated_at'
+    )
+
+
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Manga, MangaAdmin)
 admin.site.register(Chapter, ChapterAdmin)
+admin.site.register(Comment, CommentAdmin)

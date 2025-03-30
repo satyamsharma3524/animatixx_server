@@ -1,9 +1,20 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from rest_framework_nested.routers import NestedDefaultRouter
+
+from .views import MangaViewSet, ChapterViewSet, CommentViewSet
+
+# Main router
+router = DefaultRouter()
+router.register(r'manga', MangaViewSet, basename='manga')
+
+# Nested router for chapters
+manga_router = NestedDefaultRouter(router, r'manga', lookup='manga')
+manga_router.register(r'chapters', ChapterViewSet, basename='manga-chapters')
+manga_router.register(r'comments', CommentViewSet, basename='manga-comments')
+
 
 urlpatterns = [
-    path('manga/', views.MangaViewSet.as_view(
-        {'get': 'list'}), name='mangalist'),
-    path('manga/<int:manga_id>/chapters/', views.ChapterViewSet.as_view(
-        {'get': 'list'}), name='chapterlist'),
+    path('', include(router.urls)),
+    path('', include(manga_router.urls)),
 ]
