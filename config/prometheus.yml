@@ -5,4 +5,4 @@ scrape_configs:
   - job_name: 'django'
     metrics_path: "/metrics"
     static_configs:
-      - targets: ['animatrixx-backend:8000']
+      - targets: ['animatrixx-backend:80']

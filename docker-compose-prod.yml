@@ -5,16 +5,14 @@ services:
     restart: always
     env_file:
       - .env
-    ports:
-      - 3306:3306
     volumes:
       - animatrixx_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysql", "-h", "animatrixx-db", "-u", "root", "-psecret", "-e", "SELECT 1"]
-      interval: 1m30s
-      timeout: 30s
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 30s
+      timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 10s
     networks:
       - animatrixx
 
