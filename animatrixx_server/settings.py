@@ -197,13 +197,14 @@ LOGGING = {
 DATABASES = {
     'default': {
         'ENGINE': 'django_prometheus.db.backends.mysql',
-        'PORT': 3306,
+        'PORT': 3307,
         'NAME': 'animatrixx',
         'USER': 'root',
         'PASSWORD': 'secret',
-        'HOST': 'animatrixx-db',
+        'HOST': 'haproxy',
         'OPTIONS': {
             'charset': 'utf8mb4',
+            'init_command': "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED",
         },
     }
 }
