@@ -13,16 +13,19 @@ from rest_framework.authentication import TokenAuthentication
 from manga.models import (
     Chapter,
     Comment,
-    Manga
+    Manga,
+    Tag
 )
 from manga.serializers import (
     ChapterSerializer,
     CommentSerializer,
-    MangaSerializer
+    MangaSerializer,
+    TagSerializer
 )
 
 
 class MangaViewSet(mixins.ListModelMixin,
+                   mixins.RetrieveModelMixin,
                    viewsets.GenericViewSet):
     serializer_class = MangaSerializer
     queryset = Manga.objects.all().order_by("-created_at")
@@ -34,6 +37,7 @@ class MangaViewSet(mixins.ListModelMixin,
 
 
 class ChapterViewSet(mixins.ListModelMixin,
+                     mixins.RetrieveModelMixin,
                      viewsets.GenericViewSet):
     serializer_class = ChapterSerializer
     queryset = Chapter.objects.all().order_by("-chapter_number")
@@ -45,6 +49,11 @@ class ChapterViewSet(mixins.ListModelMixin,
             chapter_number_int=Cast("chapter_number", IntegerField())
         ).filter(manga__pk=manga_pk).order_by("chapter_number_int")
         return super().list(request, *args, **kwargs)
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()
 
 
 class CommentViewSet(viewsets.ModelViewSet):

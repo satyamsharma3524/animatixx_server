@@ -1,12 +1,26 @@
 from rest_framework import serializers
 from manga.models import (
-    Chapter, Comment, Manga, UserHistory)
+    Chapter, Comment, Manga, Tag, UserHistory)
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('id', 'title', 'description')
 
 
 class MangaSerializer(serializers.ModelSerializer):
+    # use tag serialiser to show all tags data
+    tags = TagSerializer(many=True)
+
     class Meta:
         model = Manga
-        fields = '__all__'
+        fields = (
+            'id', 'title', 'alt_titles', 'description', 'alt_description',
+            'original_language', 'last_chapter', 'completion_status',
+            'latest_chapter', 'cover_image', 'banner_image', 'tags',
+            'created_at', 'updated_at'
+        )
 
 
 class ChapterSerializer(serializers.ModelSerializer):
