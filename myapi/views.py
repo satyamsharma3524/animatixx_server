@@ -9,7 +9,6 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
-
 from manga.models import (
     Chapter,
     Comment,
