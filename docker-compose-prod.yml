@@ -7,58 +7,12 @@ services:
       - .env
     volumes:
       - animatrixx_data:/var/lib/mysql
-    networks:
-      - animatrixx
-    command: --wsrep-new-cluster --wsrep-cluster-name=animatrixx_cluster --wsrep-cluster-address=gcomm:// --wsrep-node-name=animatrixx-db --wsrep-on=ON --log-bin --binlog-do-db=animatrixx
-
-  mariadb-node1:
-    image: mariadb:latest
-    container_name: mariadb-node1
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - mariadb_node1_data:/var/lib/mysql
-    networks:
-      - animatrixx
-    command: --wsrep-cluster-name=animatrixx_cluster --wsrep-cluster-address=gcomm://animatrixx-db --wsrep-node-name=node1 --wsrep-on=ON --log-bin --binlog-do-db=animatrixx
-
-  mariadb-node2:
-    image: mariadb:latest
-    container_name: mariadb-node2
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - mariadb_node2_data:/var/lib/mysql
-    networks:
-      - animatrixx
-    depends_on:
-      - animatrixx-db
-    command: --wsrep-cluster-name=animatrixx_cluster --wsrep-cluster-address=gcomm://animatrixx-db --wsrep-node-name=node2 --wsrep-on=ON --log-bin --binlog-do-db=animatrixx
-
-  mariadb-node3:
-    image: mariadb:latest
-    container_name: mariadb-node3
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - mariadb_node3_data:/var/lib/mysql
-    networks:
-      - animatrixx
-    depends_on:
-      - animatrixx-db
-    command: --wsrep-cluster-name=animatrixx_cluster --wsrep-cluster-address=gcomm://animatrixx-db --wsrep-node-name=node3 --wsrep-on=ON --log-bin --binlog-do-db=animatrixx
-
-  haproxy:
-    image: haproxy:latest
-    container_name: haproxy
-    restart: always
-    volumes:
-      - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-    ports:
-      - "3307:3307"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
     networks:
       - animatrixx
 
@@ -125,7 +79,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - animatrixx
-
+  
   promtail:
     image: grafana/promtail:latest
     container_name: promtail
@@ -162,7 +116,7 @@ services:
     ports: []
     networks:
       - animatrixx
-
+  
   celery-beat:
     <<: *animatrixx_server
     container_name: celery_beat
@@ -174,7 +128,7 @@ services:
     ports: []
     networks:
       - animatrixx
-
+  
   nginx:
     build:
       context: ./nginx
@@ -192,9 +146,6 @@ services:
 
 volumes:
   animatrixx_data:
-  mariadb_node1_data:
-  mariadb_node2_data:
-  mariadb_node3_data:
   redisdata:
   rabbitmq_data:
   static_data:
