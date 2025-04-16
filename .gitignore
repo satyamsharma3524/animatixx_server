@@ -1,13 +1,107 @@
-db.sqlite3
+# ==================================
+# Python cache and compiled files
+# ==================================
+__pycache__/
 *.py[cod]
-/static/
-/staticfiles/
+*$py.class
 
-# Python
-**/__pycache__/
-.env/
+# ==================================
+# Django specific
+# ==================================
+db.sqlite3
+*.sqlite3
+/media/
+static/
+staticfiles/
+
+# ==================================
+# Environment & Secrets
+# ==================================
 .env
+.env.*
+*.env
+*.secret
 
-# Ignore celerybeat schedule file
+# ==================================
+# Celery
+# ==================================
 celerybeat-schedule
 celerybeat-schedule.db
+
+# ==================================
+# Docker
+# ==================================
+*.log
+*.pid
+docker-compose.override.yml
+
+# Ignore Docker volumes or temp containers
+volumes/
+*.sock
+
+# ==================================
+# IDEs and Editors
+# ==================================
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# ==================================
+# Node / Frontend (if using React/Next.js)
+# ==================================
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+build/
+.next/
+out/
+
+# ==================================
+# Test / Coverage
+# ==================================
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.pytest_cache/
+
+# ==================================
+# Logs & Temp files
+# ==================================
+*.log
+*.tmp
+*.swp
+*.bak
+
+# ==================================
+# Backup & Metadata
+# ==================================
+*.orig
+*.DS_Store
+*.~, *~
+
+# ==================================
+# System-specific
+# ==================================
+Thumbs.db
+ehthumbs.db
+.DS_Store
+Desktop.ini
+
+# ==================================
+# Misc
+# ==================================
+__pypackages__/
+.Python
+.mypy_cache/
+.pyre/
+.pytype/
+pip-log.txt
+pip-delete-this-directory.txt
