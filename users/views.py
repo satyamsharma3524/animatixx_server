@@ -1,7 +1,7 @@
 from manga.helpers import update_manga_history
 from manga.models import UserHistory
 from manga.serializers import UserHistorySerializer
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import User
@@ -11,6 +11,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 # from django_ratelimit.decorators import ratelimit
+from rest_framework.authtoken.models import Token
 
 
 import requests
@@ -77,9 +78,24 @@ class GoogleOAuthCallbackView(APIView):
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        user = self.get_queryset().get(id=response.data['id'])
+
+        # Create token for the new user
+        token, created = Token.objects.get_or_create(user=user)
+
+        return Response({
+            'user': response.data,
+            'token': token.key
+        })
 
 
 class LoginView(APIView):
+    permission_classes = [permissions.AllowAny]
+
     # @ratelimit(key='ip', rate='5/m', method='POST', block=True)
     def post(self, request):
         serializer = LoginSerializer(data=request.data)

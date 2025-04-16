@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -26,16 +27,22 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email_or_username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        user = User.objects.filter(email=data['email']).first()
-        if user and user.check_password(data['password']):
-            refresh = RefreshToken.for_user(user)
-            return {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-                "user": UserSerializer(user).data
-            }
-        raise serializers.ValidationError("Invalid credentials")
+        identifier = data.get("email_or_username")
+        password = data.get("password")
+        request = self.context.get('request')
+
+        user = authenticate(
+            request=request, username=identifier, password=password)
+        if not user:
+            raise serializers.ValidationError("Invalid credentials")
+
+        token, _ = Token.objects.get_or_create(user=user)
+
+        return {
+            "token": token.key,
+            "user": UserSerializer(user).data
+        }

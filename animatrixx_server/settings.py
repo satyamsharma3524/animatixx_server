@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
-    "rest_framework_simplejwt.token_blacklist",
     "rest_framework.authtoken",
     "dj_rest_auth.registration",
     "dj_rest_auth",
@@ -92,6 +91,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 SELECT2_CSS = ''
 
 AUTHENTICATION_BACKENDS = [
+    'users.backends.EmailOrUsernameBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
@@ -118,13 +118,6 @@ REST_AUTH_REGISTER_SERIALIZERS = {
     "REGISTER_SERIALIZER": "dj_rest_auth.registration.serializers.RegisterSerializer",
 }
 
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": True,
-}
 
 TEMPLATES = [
     {
@@ -281,3 +274,6 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+
+
+AUTH_USER_MODEL = 'users.User'
