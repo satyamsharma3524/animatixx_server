@@ -15,5 +15,5 @@ else
   COMPOSE_FILE="docker-compose.yml"
 fi
 
-docker-compose -f $COMPOSE_FILE build --pull
-docker-compose -f $COMPOSE_FILE up -d --remove-orphans
+docker compose -f $COMPOSE_FILE build --pull
+docker compose -f $COMPOSE_FILE up -d --remove-orphans
