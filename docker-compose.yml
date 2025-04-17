@@ -9,8 +9,6 @@ services:
       - 3306:3306
     volumes:
       - animatrixx_data:/var/lib/mysql
-      - static_data:/vol/web/static
-      - media_data:/vol/web/media
     healthcheck:
       test: ["CMD", "mysql", "-h", "animatrixx-db", "-u", "root", "-psecret", "-e", "SELECT 1"]
       interval: 1m30s
@@ -141,8 +139,7 @@ services:
     container_name: nginx
     restart: unless-stopped
     volumes:
-      - static_data:/vol/web/static
-      - media_data:/vol/web/media
+      - static_data:/vol/static
     ports:
       - 8080:8080
     depends_on:
@@ -155,7 +152,6 @@ volumes:
   redisdata:
   rabbitmq_data:
   static_data:
-  media_data:
 
 networks:
   animatrixx:
