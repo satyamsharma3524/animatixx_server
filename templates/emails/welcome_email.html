@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Welcome to Animatrixx!</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Comic Sans MS', cursive, sans-serif;
+        background-color: #fff8f0;
+        color: #333;
+      }
+
+      .email-container {
+        max-width: 600px;
+        margin: auto;
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      }
+
+      .banner {
+        width: 100%;
+      }
+
+      .logo {
+        text-align: center;
+        margin-top: -60px;
+      }
+
+      .logo img {
+        width: 100px;
+        border-radius: 50%;
+        background-color: #fff;
+        padding: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .content {
+        padding: 30px;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+        color: #ff6f61;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      .cta {
+        margin-top: 25px;
+      }
+
+      .button {
+        display: inline-block;
+        padding: 12px 25px;
+        background-color: #ff6f61;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+
+      .button:hover {
+        background-color: #e65b50;
+      }
+
+      .footer {
+        font-size: 12px;
+        color: #888;
+        margin-top: 40px;
+        padding-bottom: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="email-container">
+      <img
+        class="banner"
+        src="{% static 'images/Banner.jpeg' %}"
+        alt="Animatrixx Banner"
+      />
+
+      <div class="logo">
+        <img
+          src="{% static 'images/logo.png' %}"
+          alt="Animatrixx Cat Logo"
+        />
+      </div>
+
+      <div class="content">
+        <h1>Welcome to Animatrixx! 🐾</h1>
+        <p>
+          Hey there, manga lover!<br /><br />
+          We’re thrilled to have you join the <strong>Animatrixx</strong> family. 
+          Get ready to dive into a world full of amazing stories, epic adventures,
+          and the cutest cat-vibes ever! 😻
+        </p>
+
+        <div class="cta">
+          <a href="https://animatrixx.in" class="button">Start Exploring</a>
+        </div>
+
+        <div class="footer">
+          Sent with love by your friends at Animatrixx 🐾<br />
+          If you didn’t sign up, you can ignore this email.
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

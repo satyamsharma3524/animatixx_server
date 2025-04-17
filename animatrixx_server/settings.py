@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+n$lfhm8z5oqattfsu&2#@mht#v=fdvh15czcv$!geh2zg^t1h'
+SECRET_KEY = os.getenv("SECRET_KEY", "animatrixx-fallback-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DEBUG', 0)))
@@ -122,7 +122,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ BASE_DIR / "templates" ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -185,16 +185,17 @@ LOGGING = {
 DATABASES = {
     'default': {
         'ENGINE': 'django_prometheus.db.backends.mysql',
-        'PORT': 3306,
-        'NAME': 'animatrixx',
-        'USER': 'root',
-        'PASSWORD': 'secret',
-        'HOST': 'animatrixx-db',
+        'NAME': os.getenv('MYSQL_DATABASE'),
+        'USER': os.getenv('MYSQL_USER'),
+        'PASSWORD': os.getenv('MYSQL_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('MYSQL_DB_PORT', '3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
         },
     }
 }
+
 
 CACHES = {
     "default": {
@@ -277,3 +278,14 @@ CELERY_TIMEZONE = 'UTC'
 
 
 AUTH_USER_MODEL = 'users.User'
+
+
+
+# Email Configurations
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.zoho.in')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = f"Animatrixx <{EMAIL_HOST_USER}>"

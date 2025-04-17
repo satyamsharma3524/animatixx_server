@@ -4,6 +4,7 @@ from manga.serializers import UserHistorySerializer
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from users.tasks import send_welcome_email
 from .models import User
 from .serializers import (
     RegisterSerializer, LoginSerializer, UserSerializer)
@@ -86,6 +87,9 @@ class RegisterView(generics.CreateAPIView):
 
         # Create token for the new user
         token, created = Token.objects.get_or_create(user=user)
+
+        # Send welcome email
+        send_welcome_email.delay(user.email, user.username)
 
         return Response({
             'user': response.data,
