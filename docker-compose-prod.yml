@@ -7,6 +7,7 @@ services:
       - .env
     volumes:
       - animatrixx_data:/var/lib/mysql
+      - static_data:/vol/web/static
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$MYSQL_ROOT_PASSWORD || exit 1"]
       interval: 30s
@@ -27,10 +28,9 @@ services:
       - redis
     volumes:
       - .:/code
+      - ./media:/vol/web/media
     env_file:
       - .env
-    ports:
-      - 80:80
     networks:
       - animatrixx
 
@@ -136,9 +136,10 @@ services:
     container_name: nginx
     restart: unless-stopped
     volumes:
-      - static_data:/vol/static
+      - static_data:/vol/web/static
+      - ./media:/vol/web/media
     ports:
-      - 8080:8080
+      - 80:80
     depends_on:
       - animatrixx-backend
     networks:

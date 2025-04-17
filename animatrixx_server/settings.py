@@ -261,7 +261,9 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = "/vol/web/static"
 MEDIA_ROOT = "/vol/web/media"
+MEDIA_URL = '/media/'
 
+BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
