@@ -87,19 +87,19 @@
     <div class="email-container">
       <img
         class="banner"
-        src="{% static 'images/Banner.jpeg' %}"
+        src="{{ banner_url }}"
         alt="Animatrixx Banner"
       />
 
       <div class="logo">
         <img
-          src="{% static 'images/logo.png' %}"
+          src="{{ logo_url }}"
           alt="Animatrixx Cat Logo"
         />
       </div>
 
       <div class="content">
-        <h1>Welcome to Animatrixx! 🐾</h1>
+        <h1>Welcome to Animatrixx! {{ username }} 🐾</h1>
         <p>
           Hey there, manga lover!<br /><br />
           We’re thrilled to have you join the <strong>Animatrixx</strong> family. 

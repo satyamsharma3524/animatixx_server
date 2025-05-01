@@ -22,6 +22,7 @@ def send_html_email(
     to_email = [to_email] if isinstance(to_email, str) else to_email
 
     html_content = render_to_string(template_name, context)
+    print(html_content)
     text_content = plain_text or (
         f"Hi {context.get('user', '')}, "
         "view this email in a browser that supports HTML.")
