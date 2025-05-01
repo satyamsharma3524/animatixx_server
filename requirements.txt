@@ -30,3 +30,5 @@ dj-rest-auth
 cryptography
 django-ratelimit
 drf-nested-routers
+boto3
+django-storages
