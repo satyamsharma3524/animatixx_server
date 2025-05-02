@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "rest_framework.authtoken",
     "dj_rest_auth.registration",
+    "django_elasticsearch_dsl",
     "dj_rest_auth",
     "storages",
     "django.contrib.sites",
@@ -119,6 +120,11 @@ REST_AUTH_REGISTER_SERIALIZERS = {
     "REGISTER_SERIALIZER": "dj_rest_auth.registration.serializers.RegisterSerializer",
 }
 
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'http://elasticsearch:9200'
+    },
+}
 
 TEMPLATES = [
     {

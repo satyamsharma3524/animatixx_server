@@ -20,6 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('myapi.urls')),
     path('users/', include('users.urls')),
+    path('manga/', include('manga.urls')),
     path('', include('django.contrib.auth.urls')),
     path('', include('django_prometheus.urls')),
     path("select2/", include("django_select2.urls")),

@@ -116,7 +116,7 @@ services:
     ports: []
     networks:
       - animatrixx
-  
+
   celery-beat:
     <<: *animatrixx_server
     container_name: celery_beat
@@ -128,7 +128,7 @@ services:
     ports: []
     networks:
       - animatrixx
-  
+
   nginx:
     build:
       context: ./nginx
@@ -144,11 +144,26 @@ services:
     networks:
       - animatrixx
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+      - animatrixx
+
 volumes:
   animatrixx_data:
   redisdata:
   rabbitmq_data:
   static_data:
+  esdata:
 
 networks:
   animatrixx:

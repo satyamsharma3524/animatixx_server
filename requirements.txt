@@ -32,3 +32,4 @@ django-ratelimit
 drf-nested-routers
 boto3
 django-storages
+django-elasticsearch-dsl
