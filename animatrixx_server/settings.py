@@ -89,7 +89,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'animatrixx_server.urls'
 CORS_ORIGIN_ALLOW_ALL = True
-# CSRF_TRUSTED_ORIGINS = ['https://animatrixx.in', '*']
+CSRF_TRUSTED_ORIGINS = ['https://animatrixx.in', '*']
 SELECT2_CSS = ''
 
 AUTHENTICATION_BACKENDS = [
