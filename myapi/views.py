@@ -35,6 +35,11 @@ class MangaViewSet(mixins.ListModelMixin,
     # authentication_classes = [TokenAuthentication]
 
     def list(self, request, *args, **kwargs):
+        self.queryset = Manga.objects.filter(
+            cover_image__isnull=False
+        ).exclude(
+            cover_image=''
+        ).order_by("-created_at")
         return super().list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
