@@ -89,15 +89,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'animatrixx_server.urls'
 CORS_ORIGIN_ALLOW_ALL = True
-CSRF_TRUSTED_ORIGINS = ['https://animatrixx.in', '*']
+CSRF_TRUSTED_ORIGINS = ['https://animatrixx.in', 'http://localhost:3000']
 SELECT2_CSS = ''
 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://animatrixx-next.vercel.app",
-    "https://animatrixx.in",
-]
+CORS_ALLOW_CREDENTIALS = False
+# CORS_ALLOWED_ORIGINS = ["*"]
 
 AUTHENTICATION_BACKENDS = [
     'users.backends.EmailOrUsernameBackend',
