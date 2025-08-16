@@ -12,13 +12,14 @@ class TagSerializer(serializers.ModelSerializer):
 class MangaSerializer(serializers.ModelSerializer):
     # use tag serialiser to show all tags data
     tags = TagSerializer(many=True)
+    type = serializers.CharField(default="manga", read_only=True)
 
     class Meta:
         model = Manga
         fields = (
             'id', 'title', 'alt_titles', 'description', 'alt_description',
             'original_language', 'last_chapter', 'completion_status',
-            'latest_chapter', 'cover_image', 'banner_image', 'tags',
+            'latest_chapter', 'cover_image', 'banner_image', 'tags', 'type',
             'created_at', 'updated_at'
         )
 
