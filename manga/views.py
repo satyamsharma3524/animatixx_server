@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 # from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from elasticsearch_dsl.query import MultiMatch
+# from elasticsearch_dsl.query import MultiMatch
 from manga.documents import MangaDocument
 
 
@@ -20,15 +20,10 @@ class MangaSearchView(APIView):
         search = MangaDocument.search()
         if query:
             search = search.query(
-                MultiMatch(
-                    query=query,
-                    fields=[
-                        'title^3',
-                        'description',
-                        'tags'
-                    ],
-                    fuzziness='auto'
-                )
+                "multi_match",
+                query=query,
+                fields=["title^3", "description", "tags"],
+                fuzziness="auto"
             )
 
         if tags:
