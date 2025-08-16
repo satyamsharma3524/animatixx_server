@@ -103,7 +103,7 @@ class ChapterViewSet(mixins.ListModelMixin,
 
 class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
-    queryset = Tag.objects.all()
+    queryset = Tag.objects.filter(is_active=True)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
