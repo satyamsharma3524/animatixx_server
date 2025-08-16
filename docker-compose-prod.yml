@@ -40,6 +40,7 @@ services:
     ports:
       - 6379:6379
     volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
       - redisdata:/data
     networks:
       - animatrixx
