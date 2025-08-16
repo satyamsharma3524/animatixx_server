@@ -35,11 +35,18 @@ class MangaViewSet(mixins.ListModelMixin,
     # authentication_classes = [TokenAuthentication]
 
     def list(self, request, *args, **kwargs):
-        self.queryset = Manga.objects.filter(
+        queryset = Manga.objects.filter(
             cover_image__isnull=False
         ).exclude(
             cover_image=''
         ).order_by("-created_at")
+
+        # 🔹 filter by tags (case-insensitive match)
+        tag_param = request.query_params.get("tags")
+        if tag_param:
+            queryset = queryset.filter(tags__title__iexact=tag_param)
+
+        self.queryset = queryset
         return super().list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
@@ -103,7 +110,7 @@ class ChapterViewSet(mixins.ListModelMixin,
 
 class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
-    queryset = Tag.objects.all()
+    queryset = Tag.objects.filter(is_active=True)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
