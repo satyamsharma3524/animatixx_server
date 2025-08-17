@@ -35,6 +35,14 @@ class MangaListSerializer(serializers.ModelSerializer):
         )
 
 
+class MangaCarouselSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Manga
+        fields = (
+            'id', 'title', 'cover_image', 'banner_image', 'description',
+        )
+
+
 class ChapterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chapter

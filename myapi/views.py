@@ -1,4 +1,5 @@
 # from rest_framework.decorators import api_view
+import random
 from manga.tasks import track_manga_view
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets, status
@@ -23,6 +24,7 @@ from manga.serializers import (
     CommentSerializer,
     MangaSerializer,
     MangaListSerializer,
+    MangaCarouselSerializer,
     TagSerializer
 )
 
@@ -106,6 +108,45 @@ class HomeMangaViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             "trending_now": self.get_serializer(trending, many=True).data,
             "popular": self.get_serializer(popular, many=True).data,
         })
+
+
+class CarouselViewSet(viewsets.ViewSet):
+    """
+    Homepage Carousel API
+    Returns 3–5 mangas that are both in trending and popular,
+    and have a banner_image.
+    """
+    serializer_class = MangaCarouselSerializer
+
+    def list(self, request):
+        cache_key = "homepage:carousel"
+        data = cache.get(cache_key)
+        if data:
+            return Response(data)
+
+        # Get IDs from Redis
+        # trending_ids = set(r.zrevrange("trending:manga:weekly", 0, 49))
+        # popular_ids = set(r.zrevrange("popular:manga", 0, 49))
+        # common_ids = list(trending_ids & popular_ids)
+
+        # queryset = Manga.objects.filter(
+        #     id__in=common_ids,
+        #     banner_image__isnull=False
+        # )[:5]
+
+        # ✅ Get all mangas that have a banner
+        banner_mangas = Manga.objects.filter(banner_image__isnull=False)
+
+        # ✅ Randomly pick 5
+        manga_ids = list(banner_mangas.values_list("id", flat=True))
+        selected_ids = random.sample(manga_ids, min(5, len(manga_ids)))
+
+        queryset = banner_mangas.filter(id__in=selected_ids)
+
+        serialized = self.serializer_class(queryset, many=True).data
+        cache.set(cache_key, serialized, timeout=3600)
+
+        return Response(serialized)
 
 
 class ChapterViewSet(mixins.ListModelMixin,
