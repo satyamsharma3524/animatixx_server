@@ -3,7 +3,7 @@ from manga.tasks import track_manga_view
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets, status
 # from rest_framework.pagination import PageNumberPagination
-# from django.core.cache import cache
+from django.core.cache import cache
 from django.db.models import IntegerField
 from django.db.models.functions import Cast
 from rest_framework.exceptions import ValidationError
@@ -22,6 +22,7 @@ from manga.serializers import (
     ChapterSerializer,
     CommentSerializer,
     MangaSerializer,
+    MangaListSerializer,
     TagSerializer
 )
 
@@ -33,6 +34,11 @@ class MangaViewSet(mixins.ListModelMixin,
     queryset = Manga.objects.all().order_by("-created_at")
     # permission_classes = [IsAuthenticated]
     # authentication_classes = [TokenAuthentication]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return MangaListSerializer
+        return MangaSerializer
 
     def list(self, request, *args, **kwargs):
         queryset = Manga.objects.filter(
@@ -59,7 +65,7 @@ class MangaViewSet(mixins.ListModelMixin,
 
 class HomeMangaViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Manga.objects.none()
-    serializer_class = MangaSerializer
+    serializer_class = MangaListSerializer
 
     def list(self, request):
         user_id = request.user.id if request.user.is_authenticated else None
@@ -71,25 +77,34 @@ class HomeMangaViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             recent_ids = r.lrange(f"user:{user_id}:recent_manga", 0, 9)
             if recent_ids:
                 preserved = Case(*[When(id=pk, then=pos)
-                                 for pos, pk in enumerate(recent_ids)])
+                                   for pos, pk in enumerate(recent_ids)])
                 recently_viewed = Manga.objects.filter(
                     id__in=recent_ids).order_by(preserved)
 
-        trending_ids = r.zrevrange("trending:manga:weekly", 0, 9)
-        if trending_ids:
-            trending = Manga.objects.filter(id__in=trending_ids)
+        # ✅ cache trending for 1 hour
+        trending = cache.get("home:trending")
+        if trending is None:
+            trending_ids = r.zrevrange("trending:manga:weekly", 0, 9)
+            if trending_ids:
+                trending = list(Manga.objects.filter(id__in=trending_ids))
+                cache.set("home:trending", trending, timeout=3600)
+            else:
+                trending = []
 
-        popular_ids = r.zrevrange("popular:manga", 0, 9)
-        if popular_ids:
-            popular = Manga.objects.filter(id__in=popular_ids)
+        # ✅ cache popular for 1 hour
+        popular = cache.get("home:popular")
+        if popular is None:
+            popular_ids = r.zrevrange("popular:manga", 0, 9)
+            if popular_ids:
+                popular = list(Manga.objects.filter(id__in=popular_ids))
+                cache.set("home:popular", popular, timeout=3600)
+            else:
+                popular = []
 
         return Response({
-            "recently_viewed": self.get_serializer(
-                recently_viewed, many=True).data,
-            "trending_now": self.get_serializer(
-                trending, many=True).data,
-            "popular": self.get_serializer(
-                popular, many=True).data,
+            "recently_viewed": self.get_serializer(recently_viewed, many=True).data,
+            "trending_now": self.get_serializer(trending, many=True).data,
+            "popular": self.get_serializer(popular, many=True).data,
         })
 
 
@@ -110,7 +125,13 @@ class ChapterViewSet(mixins.ListModelMixin,
 
 class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
-    queryset = Tag.objects.filter(is_active=True)
+
+    def get_queryset(self):
+        tags = cache.get("tags:active")
+        if tags is None:
+            tags = list(Tag.objects.filter(is_active=True))
+            cache.set("tags:active", tags, timeout=3600)  # 1 hour
+        return tags
 
 
 class CommentViewSet(viewsets.ModelViewSet):

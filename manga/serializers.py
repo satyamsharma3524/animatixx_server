@@ -24,6 +24,17 @@ class MangaSerializer(serializers.ModelSerializer):
         )
 
 
+class MangaListSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True)
+    type = serializers.CharField(default="manga", read_only=True)
+
+    class Meta:
+        model = Manga
+        fields = (
+            'id', 'title', 'cover_image', 'tags', 'type',
+        )
+
+
 class ChapterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chapter
