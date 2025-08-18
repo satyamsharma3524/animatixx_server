@@ -144,7 +144,8 @@ class CarouselViewSet(viewsets.ViewSet):
         queryset = banner_mangas.filter(id__in=selected_ids)
 
         serialized = self.serializer_class(queryset, many=True).data
-        cache.set(cache_key, serialized, timeout=3600)
+        # ✅ Cache for 6 hours
+        cache.set(cache_key, serialized, timeout=6 * 60 * 60)
 
         return Response(serialized)
 
