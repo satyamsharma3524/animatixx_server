@@ -104,7 +104,8 @@ class HomeMangaViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 popular = []
 
         return Response({
-            "recently_viewed": self.get_serializer(recently_viewed, many=True).data,
+            "recently_viewed": self.get_serializer(
+                recently_viewed, many=True).data,
             "trending_now": self.get_serializer(trending, many=True).data,
             "popular": self.get_serializer(popular, many=True).data,
         })

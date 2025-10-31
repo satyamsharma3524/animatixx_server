@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_nested.routers import NestedDefaultRouter
 
 from .views import (
-    CarouselViewSet, HomeMangaViewSet, MangaViewSet, ChapterViewSet, CommentViewSet, TagViewSet)
+    CarouselViewSet, HomeMangaViewSet, MangaViewSet,
+    ChapterViewSet, CommentViewSet, TagViewSet)
 
 # Main router
 router = DefaultRouter()

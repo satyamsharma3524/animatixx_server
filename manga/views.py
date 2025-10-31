@@ -35,7 +35,8 @@ class MangaSearchView(APIView):
 
         if completed in ['true', 'false']:
             is_completed = completed.lower() == 'true'
-            search = search.filter('term', completion_status=is_completed)
+            search = search.filter(
+                'term', completion_status=is_completed)
 
         # Execute search with pagination
         paginator = MangaSearchPagination()
@@ -58,19 +59,22 @@ class MangaSearchView(APIView):
 
 def image_proxy(request):
     """
-    A view to proxy image requests from Mangadex to bypass hotlinking protection.
+    A view to proxy image requests from Mangadex to bypass
+    hotlinking protection.
     """
     try:
         # 1. Get the target image URL from the query parameters
         image_url = request.GET.get('url')
 
         if not image_url:
-            return JsonResponse({'error': 'Image URL is required'}, status=400)
+            return JsonResponse(
+                {'error': 'Image URL is required'}, status=400)
 
         allowed_host = 'mangadex.network'
         parsed_url = urlparse(image_url)
 
-        if not parsed_url.hostname or not parsed_url.hostname.endswith(allowed_host):
+        if not parsed_url.hostname or (
+                not parsed_url.hostname.endswith(allowed_host)):
             return JsonResponse({'error': 'Invalid host'}, status=403)
 
         response = requests.get(
@@ -82,12 +86,14 @@ def image_proxy(request):
         response.raise_for_status()
 
         if response.status_code == 200:
-            content_type = response.headers.get('Content-Type', 'image/jpeg')
+            content_type = response.headers.get(
+                'Content-Type', 'image/jpeg')
             image_response = HttpResponse(
                 response.content, content_type=content_type)
 
             # Add caching headers
-            image_response['Cache-Control'] = 'public, max-age=604800, immutable'
+            image_response[
+                'Cache-Control'] = 'public, max-age=604800, immutable'
             return image_response
         else:
             return JsonResponse(
@@ -96,7 +102,9 @@ def image_proxy(request):
 
     except requests.exceptions.RequestException as e:
         print(f"Image proxy error: {e}")
-        return JsonResponse({'error': 'Internal server error'}, status=500)
+        return JsonResponse(
+            {'error': 'Internal server error'}, status=500)
     except Exception as e:
         print(f"Unexpected error: {e}")
-        return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
+        return JsonResponse(
+            {'error': 'An unexpected error occurred'}, status=500)

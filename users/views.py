@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 # from django_ratelimit.decorators import ratelimit
 from rest_framework.authtoken.models import Token
-
+from django.shortcuts import redirect
 
 import requests
 # from django.conf import settings
@@ -65,15 +65,46 @@ class GoogleOAuthCallbackView(APIView):
         token_data = response.json()
 
         if "access_token" not in token_data:
-            return Response({
-                "error": "Failed to obtain access token",
-                "details": token_data
-            }, status=400)
+            pass
+        access_token = token_data["access_token"]
+        google_login_url = request.build_absolute_uri('/users/google/')
 
-        return Response({
-            "access_token": token_data["access_token"],
-            "refresh_token": token_data.get("refresh_token")
-        })
+        try:
+            # Make an internal POST request to your own login view
+            login_response = requests.post(
+                google_login_url,
+                data={'access_token': access_token}
+            )
+            login_data = login_response.json()
+
+            if login_response.status_code == 200:
+                login_data = login_response.json()
+                drf_token = login_data.get('key')
+                user_data = login_data.get('user')
+
+                if not drf_token or not user_data:
+                    return Response(
+                        {"error": "key/user not found in login response"},
+                        status=500)
+
+                import json
+                from urllib.parse import quote
+
+                user_json_string = json.dumps(user_data)
+                encoded_user_data = quote(user_json_string)
+                frontend_domain = "localhost:3000"
+                frontend_url = (
+                    f"{frontend_domain}/auth/google-callback"
+                    f"?token={drf_token}&user={encoded_user_data}"
+                )
+                return redirect(frontend_url)
+
+            else:
+                return Response(login_data, status=login_response.status_code)
+        except requests.exceptions.RequestException as e:
+            return Response(
+                {"error": "Internal login request failed", "details": str(e)},
+                status=500)
 
 
 class RegisterView(generics.CreateAPIView):
