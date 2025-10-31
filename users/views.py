@@ -65,7 +65,11 @@ class GoogleOAuthCallbackView(APIView):
         token_data = response.json()
 
         if "access_token" not in token_data:
-            pass
+            return Response({
+                "error": "Failed to obtain access token from Google",
+                "details": token_data
+            }, status=400)
+
         access_token = token_data["access_token"]
         google_login_url = request.build_absolute_uri('/users/google/')
 
@@ -78,7 +82,6 @@ class GoogleOAuthCallbackView(APIView):
             login_data = login_response.json()
 
             if login_response.status_code == 200:
-                login_data = login_response.json()
                 drf_token = login_data.get('key')
                 user_data = login_data.get('user')
 
@@ -92,7 +95,9 @@ class GoogleOAuthCallbackView(APIView):
 
                 user_json_string = json.dumps(user_data)
                 encoded_user_data = quote(user_json_string)
-                frontend_domain = "localhost:3000"
+
+                frontend_domain = "http://localhost:3000"
+
                 frontend_url = (
                     f"{frontend_domain}/auth/google-callback"
                     f"?token={drf_token}&user={encoded_user_data}"
