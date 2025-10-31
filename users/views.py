@@ -27,7 +27,7 @@ class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
 
 # redirect to this url on Google icon click
-# https://accounts.google.com/o/oauth2/auth?client_id=369026344558-458lvpvju2frq5uv2sopk3qqnut9odbl.apps.googleusercontent.com&redirect_uri=http://localhost:8000/users/google/callback/&response_type=code&scope=email%20profile&access_type=offline&prompt=consent
+# https://accounts.google.com/o/oauth2/auth?client_id=369026344558-458lvpvju2frq5uv2sopk3qqnut9odbl.apps.googleusercontent.com&redirect_uri=https://server.animatrixx.in/users/google/callback/&response_type=code&scope=email%20profile&access_type=offline&prompt=consent
 
 
 class GoogleOAuthCallbackView(APIView):
@@ -58,7 +58,7 @@ class GoogleOAuthCallbackView(APIView):
             "code": code,
             "grant_type": "authorization_code",
             "redirect_uri": (
-                "http://localhost:8000/users/google/callback/"),
+                "https://server.animatrixx.in/users/google/callback/"),
         }
 
         response = requests.post(token_url, data=data)
