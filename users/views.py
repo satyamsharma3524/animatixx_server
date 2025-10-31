@@ -71,13 +71,14 @@ class GoogleOAuthCallbackView(APIView):
             }, status=400)
 
         access_token = token_data["access_token"]
-        google_login_url = request.build_absolute_uri('/users/google/')
+        google_login_url = request.build_absolute_uri('/google/')
 
         try:
             # Make an internal POST request to your own login view
             login_response = requests.post(
                 google_login_url,
-                data={'access_token': access_token}
+                data={'access_token': access_token},
+                verify=False
             )
             login_data = login_response.json()
 
@@ -110,6 +111,12 @@ class GoogleOAuthCallbackView(APIView):
             return Response(
                 {"error": "Internal login request failed", "details": str(e)},
                 status=500)
+        except Exception as e:
+            return Response(
+                {"error": "An unexpected error occurred during internal login",
+                    "details": str(e)},
+                status=500
+            )
 
 
 class RegisterView(generics.CreateAPIView):
